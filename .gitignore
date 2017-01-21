@@ -1,0 +1,7 @@
+# .gitignore
+
+# Vagrant directory
+.vagrant
+
+# Generated presentation
+gh-pages/
