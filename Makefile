@@ -11,19 +11,24 @@ REVEAL_JS_TAR := 3.4.0.tar.gz
 # Download URL
 REVEAL_JS_URL := https://github.com/hakimel/reveal.js/archive/$(REVEAL_JS_TAR)
 
+STYLE := hogent
+STYLE_FILE := $(REVEAL_JS_DIR)/css/theme/$(STYLE).css
 
 ## Presentation
-$(OUTPUT)/index.html: basic-commands-el7.md $(REVEAL_JS_DIR)
+$(OUTPUT)/index.html: basic-commands-el7.md $(REVEAL_JS_DIR) $(STYLE_FILE)
 	pandoc \
 		--standalone \
 		--to=revealjs \
 		--template=default.revealjs \
-		--variable=theme:white \
+		--variable=theme:hogent \
 		--highlight-style=zenburn \
 		--output $@ $<
 
 # Highlight styles: espresso or zenburn (not enough contrast in the others)
 # Theme: black, moon, night
+
+$(STYLE_FILE):
+	cp $(STYLE).css $(STYLE_FILE)
 
 ## Download and install reveal.js locally
 $(REVEAL_JS_DIR):
