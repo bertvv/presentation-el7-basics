@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Bert Van Vreckem">
+  <title>Basic commands for EL7</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="reveal.js/css/theme/hogent.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+  <h1 class="title">Basic commands for EL7</h1>
+  <h2 class="author">Bert Van Vreckem</h2>
+  <h3 class="date">CentOS Dojo 2017 Brussels, 2017-02-03</h3>
+</section>
+
+<section><section id="agenda" class="titleslide slide level1"><h1>Agenda</h1></section><section id="agenda-1" class="slide level2">
+<h1>Agenda</h1>
+<ul>
+<li>Network settings (<code>ip</code>)</li>
+<li>Managing services with <code>systemctl</code></li>
+<li>Show system logs with <code>journalctl</code></li>
+<li>Show sockets (<code>ss</code>)</li>
+<li>Firewall configuration with <code>firewalld</code></li>
+<li>SELinux troubleshooting</li>
+</ul>
+</section><section id="whoami" class="slide level2">
+<h1><code>whoami</code></h1>
+<ul>
+<li>Bert Van Vreckem</li>
+<li>Lector ICT at University College Ghent (HoGent)
+<ul>
+<li>BS programme Applied Informatics</li>
+<li>Mainly Linux, research techniques</li>
+</ul></li>
+</ul>
+</section></section>
+<section><section id="thank-you" class="titleslide slide level1"><h1>Thank you!</h1></section><section id="thank-you-1" class="slide level2">
+<h1>Thank you!</h1>
+<ul>
+<li><a href="https://twitter.com/bertvanvreckem">@bertvanvreckem</a></li>
+<li><a href="https://github.com/bertvv" class="uri">https://github.com/bertvv</a>
+<ul>
+<li>Ansible/Vagrant</li>
+<li>Course material, lab assignments</li>
+</ul></li>
+<li><a href="https://youtube.com/bertvvrhogent/" class="uri">https://youtube.com/bertvvrhogent/</a>
+<ul>
+<li>Linux Screencasts (in Dutch)</li>
+</ul></li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
