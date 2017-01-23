@@ -55,8 +55,8 @@ install_packages() {
 
 configure_webserver() {
   info "Installing test page"
-  cp /vagrant/provisioning/web/test.php /var/www/html
-  cp /vagrant/provisioning/web/test.php /home/vagrant
+  cp /vagrant/www/test.php /var/www/html
+  cp /vagrant/www/test.php /home/vagrant
 
   info "Setting port number"
   sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
