@@ -23,6 +23,7 @@ IFS=$'\t\n'   # Split on newlines and tabs (but not on spaces)
 
 main() {
   install_packages
+  install_test_page
 }
 
 #{{{ Helper functions
@@ -34,6 +35,8 @@ install_packages() {
   yum install -y epel-release
   yum install -y \
     audit \
+    bash-completion \
+    bash-completion-extras \
     bind-utils \
     git \
     httpd \
@@ -44,6 +47,13 @@ install_packages() {
     tree \
     vim-enhanced \
     wordpress
+
+  systemctl start auditd.service
+}
+
+install_test_page() {
+  info "Installing test page"
+  cp /vagrant/provisioning/web/test.php /var/www/html
 }
 
 # Color definitions

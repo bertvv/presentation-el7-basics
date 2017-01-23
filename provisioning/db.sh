@@ -38,6 +38,8 @@ install_packages() {
   yum install -y epel-release
   yum install -y \
     audit \
+    bash-completion \
+    bash-completion-extras \
     bind-utils \
     git \
     mariadb \
@@ -46,9 +48,16 @@ install_packages() {
     psmisc \
     tree \
     vim-enhanced
+
+  systemctl start auditd.service
 }
 
 setup_mariadb() {
+  info "Starting MariaDB"
+  systemctl start mariadb.service
+  systemctl enable mariadb.service
+  firewall-cmd --add-service=mysql
+  firewall-cmd --add-service=mysql --permanent
 
   info "Set MariaDB root password"
 
@@ -81,7 +90,7 @@ ensure_db_exists() {
 
   mysql --user=root --password="${mariadb_root_password}" mysql << _EOF_
 CREATE DATABASE IF NOT EXISTS ${db_name};
-GRANT ALL ON ${db_name}.* TO '${db_user}'@'localhost' identified by '${db_password}';
+GRANT ALL ON ${db_name}.* TO '${db_user}'@'%' identified by '${db_password}';
 FLUSH PRIVILEGES;
 _EOF_
 }
