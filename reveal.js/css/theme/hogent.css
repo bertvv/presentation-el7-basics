@@ -1,4 +1,4 @@
-@import url(../../lib/font/source-sans-pro/source-sans-pro.css);
+import url(../../lib/font/source-sans-pro/source-sans-pro.css);
 /**
  * White theme for reveal.js. This is the opposite of the 'black' theme.
  *
@@ -34,20 +34,20 @@ body {
  *********************************************/
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
   /*margin: 0 0 20px 0;*/
-  margin: 0 0 10px 0; 
-  color: DodgerBlue;
+  margin: 0 0 10px 0;
+  color: #006FB8; /* HoGent FBO */
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: normal;
   text-transform: none; /* was uppercase */
   text-shadow: none;
-  word-wrap: break-word;   
+  word-wrap: break-word;
   }
 
 .reveal h1 {
   /*font-size: 2.5em; */
-    font-size: 1.9em;	
+    font-size: 1.9em;
   }
 
 .reveal h2 {
@@ -67,8 +67,8 @@ body {
  *********************************************/
 .reveal p {
   margin: 20px 0;
-  line-height: 1.2; 
-  text-align: left;
+  line-height: 1.2;
+  text-align: center;
   }
 
 /* Ensure certain elements are never larger than the slide itself */
@@ -77,22 +77,26 @@ body {
   max-height: 95%; }
 
 .reveal strong, .reveal b {
-  font-weight: bold; }
+  font-weight: bold;
+  color: #F43445; /* HoGent accent2 */
+}
 
 .reveal em {
-  font-style: italic; }
+  font-style: italic;
+  color: #009C7C; /* HoGent accent3 */
+}
 
 .reveal ol, .reveal dl, .reveal ul {
   display: inline-block;
   text-align: left;
- 
+
   margin: 0 0 0 1em; }
 
 .reveal ol {
   list-style-type: decimal; }
 
 .reveal ul {
-  list-style-type: disc;  
+  list-style-type: disc;
   }
 
 .reveal ul ul {
@@ -143,6 +147,7 @@ body {
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
 
 .reveal code {
+  color: #006FB8; /* Accent 1 (FBO), donkerblauw */
   font-family: monospace; }
 
 .reveal pre code {
@@ -151,7 +156,7 @@ body {
   overflow: auto;
   /*max-height: 450px;*/
   max-height: 550 px;
-  word-wrap: normal; 
+  word-wrap: normal;
   background: #fdf6e3;
   color: #000000;
   }
