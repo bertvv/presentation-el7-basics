@@ -26,9 +26,9 @@
 # [1] http://docs.vagrantup.com/v2/synced-folders/basic_usage.html
 ---
 
-- name: web
-  ip: 192.168.56.72
-
 - name: db
   ip: 192.168.56.73
+
+- name: web
+  ip: 192.168.56.72
 
