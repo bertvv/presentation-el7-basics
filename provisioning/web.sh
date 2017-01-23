@@ -23,7 +23,7 @@ IFS=$'\t\n'   # Split on newlines and tabs (but not on spaces)
 
 main() {
   install_packages
-  install_test_page
+  configure_webserver
 }
 
 #{{{ Helper functions
@@ -41,8 +41,10 @@ install_packages() {
     git \
     httpd \
     mod_ssl \
+    policycoreutils-python \
     php \
     php-mysql \
+    pciutils \
     psmisc \
     tree \
     vim-enhanced \
@@ -51,9 +53,13 @@ install_packages() {
   systemctl start auditd.service
 }
 
-install_test_page() {
+configure_webserver() {
   info "Installing test page"
   cp /vagrant/provisioning/web/test.php /var/www/html
+  cp /vagrant/provisioning/web/test.php /home/vagrant
+
+  info "Setting port number"
+  sed -i 's/Listen 80/Listen 8080/' /etc/httpd/conf/httpd.conf
 }
 
 # Color definitions
