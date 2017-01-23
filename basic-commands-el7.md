@@ -299,38 +299,77 @@ sudo firewall-cmd --add-service=https
 sudo firewall-cmd --add-service=https --permanent
 ```
 
+## Gotcha
+
+Zone assignments may be overwritten at boot time (CentOS [issue #7407](https://bugs.centos.org/view.php?id=7407))
+
+Reproduce:
+
+1. Remove interface from public zone
+
+```
+$ sudo firewall-cmd --get-active-zones
+public
+  interfaces: enp0s3 enp0s8
+$ sudo firewall-cmd --remove-interface=enp0s3
+success
+[vagrant@db ~]$ sudo firewall-cmd --get-active-zones
+public
+  interfaces: enp0s8
+```
+
+---
+
+2. Reboot, then:
+
+```
+$ sudo firewall-cmd --get-active-zones
+public
+  interfaces: enp0s3
+```
+
+- Cause: `/etc/sysconfig/network-scripts/ifup-eth`
+- Workaround: remove `firewall-cmd` invocation
+
 # Troubleshooting
 
 ## General guidelines
 
 - Follow TCP/IP (or OSI) stack
-- Bottom-up
+- Bottom-up:
+    1. Link layer
+    2. Internet layer
+    3. Transport layer
+    4. Application layer
+- Know your network, i.e. expected values
 
-## Checklist
+## Checklist: Link layer
 
-- Link layer:
-    - test the cable(s)
-    - check switch/NIC LEDs
-    - `ip link`
-- Internet layer:
-    - Local settings:
-        - IP address: `ip a`
-        - Default gateway: `ip r`
-        - DNS service: `/etc/resolv.conf`
-    - LAN connectivity:
-        - Ping between hosts
-        - Ping default GW/DNS
-        - Query DNS
+- test the cable(s)
+- check switch/NIC LEDs
+- `ip link`
 
----
+## Checklist: Internet layer
 
-- Transport layer:
-    - Service running? `sudo systemctl status SERVICE`
-    - Correct port/interface? `sudo ss -tulpn`
-    - Firewall settings? `sudo firewall-cmd --list-all`
-- Application layer:
-    - Check the logs `sudo journalctl -f -u SERVICE`
-    - Check config file syntax
+- Local settings:
+    - IP address: `ip a`
+    - Default gateway: `ip r`
+    - DNS service: `/etc/resolv.conf`
+- LAN connectivity:
+    - Ping between hosts
+    - Ping default GW/DNS
+    - Query DNS
+
+## Checklist: Transport layeri
+
+- Service running? `sudo systemctl status SERVICE`
+- Correct port/interface? `sudo ss -tulpn`
+- Firewall settings? `sudo firewall-cmd --list-all`
+
+## Checklist: Application layer
+
+- Check the logs `sudo journalctl -f -u SERVICE`
+- Check config file syntax
 
 # SELinux troubleshooting
 
