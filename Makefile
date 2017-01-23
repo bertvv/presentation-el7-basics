@@ -21,13 +21,13 @@ $(OUTPUT)/index.html: basic-commands-el7.md $(REVEAL_JS_DIR) $(STYLE_FILE)
 		--to=revealjs \
 		--template=default.revealjs \
 		--variable=theme:hogent \
-		--highlight-style=zenburn \
+		--highlight-style=haddock \
 		--output $@ $<
 
 # Highlight styles: espresso or zenburn (not enough contrast in the others)
 # Theme: black, moon, night
 
-$(STYLE_FILE):
+$(STYLE_FILE): $(STYLE).css
 	cp $(STYLE).css $(STYLE_FILE)
 
 ## Download and install reveal.js locally
@@ -44,9 +44,9 @@ clean:
 
 ## Thorough cleanup (also removes reveal.js)
 mrproper: clean
-	rm -rf $(OUTPUT)
+	rm -rf $(REVEAL_JS_DIR)
 
-all: $(OUTPUT)/index.html
+all: $(STYLE_FILE) $(OUTPUT)/index.html
 
 handouts.pdf: basic-commands-el7.md.md
 	pandoc --variable mainfont="DejaVu Sans" \
