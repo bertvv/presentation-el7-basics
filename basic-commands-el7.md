@@ -427,7 +427,65 @@ $ sudo semanage fcontext -a -t httpd_sys_content_t "/srv/www(/.*)?"
 $ cat /etc/selinux/targeted/contexts/files/file_contexts.local
 ```
 
-# Thank you!
+## Creating a policy
+
+Let's try to set `DocumentRoot "/vagrant/www"`
+
+```
+$ sudo vi /etc/httpd/conf/httpd.conf
+$ ls -Z /vagrant/www/
+-rw-rw-r--. vagrant vagrant system_u:object_r:vmblock_t:s0   test.php
+$ sudo chcon -R -t httpd_sys_content_t /vagrant/www/
+chcon: failed to change context of ‘test.php’ to ‘system_u:object_r:httpd_sys_content_t:s0’: Operation not supported
+chcon: failed to change context of ‘/vagrant/www/’ to ‘system_u:object_r:httpd_sys_content_t:s0’: Operation not supported
+```
+
+## Creating a policy
+
+Instead of setting the files to the expected context, allow httpd to access files with `vmblock_t` context
+
+1. Allow Apache to run in "permissive" mode:
+
+    ```
+    $ sudo semanage permissive -a httpd_t
+    ```
+
+2. Generate "Type Enforcement" file (.te)
+
+    ```
+    $ sudo audit2allow -a -m httpd-vboxsf > httpd-vboxsf.te
+    ```
+
+3. If necessary, edit the policy
+
+    ```
+    $ sudo vi httpd-vboxsf.te
+    ```
+
+---
+
+1. Convert to policy module (.pp)
+
+    ```
+    $ sudo checkmodule -M -m -o httpd-vboxsf.mod https-vboxsf.te
+    $ sudo semodule_package -o httpd-vboxsf.pp -m httpd-vboxsf.mod
+    ```
+
+5. Install module
+
+    ```
+    $ sudo semodule -i httpd-vboxsf.pp
+    ```
+
+6. Remove permissive domain exception
+
+    ```
+    $ sudo semanage permissive -d httpd_t
+    ```
+
+Tip: automate this!
+
+# That's it!
 
 ## Thank you!
 
@@ -445,4 +503,6 @@ $ cat /etc/selinux/targeted/contexts/files/file_contexts.local
 - Hayden, M. (2015) [Understanding systemd’s predictable network device names](https://major.io/2015/08/21/understanding-systemds-predictable-network-device-names/)
 - Jahoda, M., et al. (2016a) [RHEL 7 Security Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/index.html)
 - Jahoda, M., et al. (2016b) [RHEL 7 SELinux User's and Administrator's Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/SELinux_Users_and_Administrators_Guide/index.html)
+- Svistunov, M., et al. (2016) [RHEL 7 System Administrator's Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/index.html)
 - Van Vreckem, B. (2015) [Enterprise Linux 7 Cheat sheet](https://github.com/bertvv/cheat-sheets/blob/master/src/EL7.md)
+- Van Vreckem, B. (2017) [Network troubleshooting guide](https://github.com/bertvv/cheat-sheets/blob/master/src/NetworkTroubleshooting.md)
