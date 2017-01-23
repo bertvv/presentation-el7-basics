@@ -15,32 +15,38 @@
     - Scripts
     - ...
 
+## This talk is for you if you're
+
+- (Relatively) new to Linux/CentOS
+- Still struggling with the recent changes EL7
+
 ## Agenda
 
-- Network settings (*`ip`*)
-- Managing services (*`systemctl`*)
-- Show system logs (*`journalctl`*)
-- Show sockets (*`ss`*)
-- Firewall configuration (*`firewalld`*)
+- Network settings (`ip`)
+- Managing services (`systemctl`)
+- Show system logs (`journalctl`)
+- Show sockets (`ss`)
+- Firewall configuration (`firewalld`)
 - Troubleshooting (including *SELinux*)
 
 ## Remarks
 
 - "Old" commands are (mostly) not mentioned
-- I'm neutral w.r.t. the recent changes in Linux: systemd, etc.
-    - I won't discuss "politics"
-- Get the presentation source/example code at <https://github.com/bertvv/presentation-el7-basics/>
+- I'm neutral w.r.t. systemd, etc. I won't discuss "politics" here!
 - **Interrupt me if you have remarks/questions!**
 
+Presentation, example code:
+
+<https://github.com/bertvv/presentation-el7-basics/>
 
 ## Case: web + db server
 
-Two VirtualBox VM's, set up with Vagrant
+Two VirtualBox VMs, set up with Vagrant
 
-| Host | IP            | Service         |
-| :--- | :---          | :---            |
-| web  | 192.168.56.72 | httpd (Apache)  |
-| db   | 192.168.56.73 | mysql (MariaDB) |
+| Host  | IP            | Service              |
+| :---  | :---          | :---                 |
+| `web` | 192.168.56.72 | http, https (Apache) |
+| `db`  | 192.168.56.73 | mysql (MariaDB)      |
 
 - On `web`, a PHP app runs a query on the `db`
 - `db` is set up correctly, `web` is not
@@ -122,14 +128,14 @@ $ ip a
 - `systemd-networkd` still reads the traditional `/etc/sysconfig/network-scripts/ifcfg-*`
 - After change, restart `network.service` (see below)
 
+---
+
 ```bash
 # /etc/sysconfig/network-scripts/ifcfg-enp0s3
 DEVICE=enp0s3
 ONBOOT=yes
 BOOTPROTO=dhcp
 ```
-
----
 
 ```bash
 # /etc/sysconfig/network-scripts/ifcfg-enp0s8
@@ -161,10 +167,11 @@ Usually, *root permissions* required (`sudo`)
 
 Default command: `list-units`
 
-| Task                | Command                    |
-| :---                | :---                       |
-| List all services   | `systemctl --type=service` |
-| Failed services     | `systemctl --failed`       |
+| Task              | Command                     |
+| :---              | :---                        |
+| List all services | `systemctl --type=service`  |
+| Running services  | `systemctl --state=running` |
+| Failed services   | `systemctl --failed`        |
 
 # System logs with `systemd-journald`
 
@@ -229,7 +236,7 @@ Much more options in the man-page!
 
 (*) instead of service names from `/etc/services`
 
-(†) root permissions required
+(†) *root permissions* required
 
 ## Example
 
@@ -246,16 +253,16 @@ LISTEN  0      128               :::443            :::*    users:(("httpd",pid=4
 
 # Firewall configuration with `firewalld`
 
-## Former static vs dynamic firewall model
+## Static vs dynamic firewall model
 
 - *ip(6)tables* service: static
     - change => rule flush + daemon restart
     - broke stateful firewalling, established connections
-- *`firewalld`*: dynamic
+- *firewalld*: dynamic
     - changes applied directly, no lost connections
-- Both use `iptables`/netfilter in the background!
+- Both use iptables/netfilter in the background!
 - Tools that depend on "old" model may cause problems
-    - e.g. [docker-compose](https://github.com/docker/compose/issues/2841)
+    - e.g. `docker-compose` (Issue [#2841](https://github.com/docker/compose/issues/2841))
 
 ## Zones
 
@@ -342,6 +349,9 @@ public
     3. Transport layer
     4. Application layer
 - Know your network, i.e. expected values
+- Be thorough, check assumptions
+
+Goal: see the web page at <http://192.168.56.72/test.php>
 
 ## Checklist: Link layer
 
@@ -358,9 +368,9 @@ public
 - LAN connectivity:
     - Ping between hosts
     - Ping default GW/DNS
-    - Query DNS
+    - Query DNS (`dig`, `nslookup`, `getent`)
 
-## Checklist: Transport layeri
+## Checklist: Transport layer
 
 - Service running? `sudo systemctl status SERVICE`
 - Correct port/interface? `sudo ss -tulpn`
@@ -391,6 +401,31 @@ public
 
 Enable SELinux permanently: `/etc/sysconfig/selinux`
 
+## Boolean settings
+
+| Task                     | Command                     |
+| :---                     | :---                        |
+| List all boolean values  | `getsebool -a`              |
+| List http-related values | `getsebool -a | grep httpd` |
+| Show specific value      | `getsebool VAR`             |
+| Set value                | `setsebool VAR on`          |
+| Persistent               | `setsebool -P VAR on`       |
+
+## File context
+
+| Task                       | Command                    |
+| :---                       | :---                       |
+| Show SELinux context       | `ls -Z`                    |
+| Reset context              | `restorecon PATH`          |
+| Reset context recursively  | `restorecon -R PATH`       |
+| Change context recursively | `chcon -t CONTEXT -R PATH` |
+
+Example of adding a context rule:
+
+```
+$ sudo semanage fcontext -a -t httpd_sys_content_t "/srv/www(/.*)?"
+$ cat /etc/selinux/targeted/contexts/files/file_contexts.local
+```
 
 # Thank you!
 
