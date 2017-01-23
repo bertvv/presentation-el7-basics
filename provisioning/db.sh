@@ -22,7 +22,11 @@ wordpress_password='Amt_OtMat7'
 #}}}
 
 main() {
+  # Ensure vagrant can read logs without sudo
+  usermod --append --groups adm vagrant
+
   install_packages
+  start_basic_services
   setup_mariadb
 
   ensure_db_exists "${wordpress_database}" "${wordpress_user}" "${wordpress_password}"
@@ -45,11 +49,18 @@ install_packages() {
     mariadb \
     mariadb-server \
     mod_ssl \
+    pciutils \
+    policycoreutils-python \
     psmisc \
     tree \
     vim-enhanced
 
+}
+
+start_basic_services() {
+  info "Starting essential services"
   systemctl start auditd.service
+  systemctl restart network.service
 }
 
 setup_mariadb() {
