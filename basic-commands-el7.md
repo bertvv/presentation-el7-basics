@@ -4,21 +4,63 @@
 
 # Agenda
 
-## Agenda
-
-- Network settings (`ip`)
-- Managing services with `systemctl`
-- Show system logs with `journalctl`
-- Show sockets (`ss`)
-- Firewall configuration with `firewalld`
-- SELinux troubleshooting
-
 ## `whoami`
 
 - Bert Van Vreckem
-- Lector ICT at University College Ghent (HoGent)
+- *Lector ICT* at University College Ghent (HoGent)
     - BS programme Applied Informatics
     - Mainly Linux, research techniques
+- *Open source* contributor: <https://github.com/bertvv/>
+    - Ansible roles
+    - Scripts
+    - ...
+
+## Agenda
+
+- Network settings (*`ip`*)
+- Managing services (*`systemctl`*)
+- Show system logs (*`journalctl`*)
+- Show sockets (*`ss`*)
+- Firewall configuration (*`firewalld`*)
+- Troubleshooting (including *SELinux*)
+
+## Remarks
+
+- "Old" commands are (mostly) not mentioned
+- I'm neutral w.r.t. the recent changes in Linux: systemd, etc.
+    - I won't discuss "politics"
+- Get the presentation source/example code at <https://github.com/bertvv/presentation-el7-basics/>
+- **Interrupt me if you have remarks/questions!**
+
+
+## Case: web + db server
+
+Two VirtualBox VM's, set up with Vagrant
+
+| Host | IP            | Service         |
+| :--- | :---          | :---            |
+| web  | 192.168.56.72 | httpd (Apache)  |
+| db   | 192.168.56.73 | mysql (MariaDB) |
+
+- On `web`, a PHP app runs a query on the `db`
+- `db` is set up correctly, `web` is not
+
+---
+
+```
+$ git clone https://github.com/bertvv/presentation-el7-basics.git
+$ cd presentation-el7-basics
+$ vagrant status
+Current machine states:
+
+db                        not created (virtualbox)
+web                       not created (virtualbox)
+
+This environment represents multiple VMs. The VMs are all listed
+above with their current state. For more information about a specific
+VM, run `vagrant status NAME`.
+$ vagrant up
+```
 
 # Network settings
 
@@ -33,7 +75,7 @@
 
 ## Example (VirtualBox VM)
 
-```ShellSession
+```
 $ ip l
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -45,7 +87,7 @@ $ ip l
 
 ---
 
-```ShellSession
+```
 $ ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN 
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -77,9 +119,10 @@ $ ip a
 
 ## Configuration
 
-`systemd-networkd` still uses the traditional `/etc/sysconfig/network-scripts/ifcfg-*`
+- `systemd-networkd` still reads the traditional `/etc/sysconfig/network-scripts/ifcfg-*`
+- After change, restart `network.service` (see below)
 
-```
+```bash
 # /etc/sysconfig/network-scripts/ifcfg-enp0s3
 DEVICE=enp0s3
 ONBOOT=yes
@@ -88,7 +131,7 @@ BOOTPROTO=dhcp
 
 ---
 
-```
+```bash
 # /etc/sysconfig/network-scripts/ifcfg-enp0s8
 DEVICE=enp0s8
 ONBOOT=yes
@@ -101,7 +144,7 @@ NETMASK=255.255.255.0
 
 ## `systemctl`
 
-`systemctl [OPTION]... COMMAND [NAME]...`
+`systemctl COMMAND [OPTION]... NAME`
 
 | Task                | Command                    |
 | :---                | :---                       |
@@ -112,7 +155,7 @@ NETMASK=255.255.255.0
 | Start at boot       | `systemctl enable NAME`    |
 | Don't start at boot | `systemctl disable NAME`   |
 
-Usually, root permissions required (`sudo`)
+Usually, *root permissions* required (`sudo`)
 
 ---
 
@@ -127,10 +170,10 @@ Default command: `list-units`
 
 ## `journalctl`
 
-- `journalctl` needs root permissions
+- `journalctl` requires *root permissions*
     - Or, add user to group `adm` or `systemd-journal`
 - Some "traditional" text-based log files still exist (for now?):
-    - `/var/log/messages`
+    - `/var/log/messages` (gone in Fedora!)
     - `/var/log/httpd/access_log` and `error_log`
     - ...
 
@@ -190,7 +233,7 @@ Much more options in the man-page!
 
 ## Example
 
-```ShellSession
+```
 $ sudo ss -tlnp
 State   Recv-Q Send-Q Local Address:Port Peer Address:Port
 LISTEN  0      128                *:22              *:*    users:(("sshd",pid=1290,fd=3))
@@ -205,15 +248,14 @@ LISTEN  0      128               :::443            :::*    users:(("httpd",pid=4
 
 ## Former static vs dynamic firewall model
 
-- ip(6)tables service: static
+- *ip(6)tables* service: static
     - change => rule flush + daemon restart
-    - including reloading kernel modules
     - broke stateful firewalling, established connections
-- `firewalld`: dynamic
-    - changes applied directly
-    - no lost connections
-
-Both use `iptables`/netfilter in the background!
+- *`firewalld`*: dynamic
+    - changes applied directly, no lost connections
+- Both use `iptables`/netfilter in the background!
+- Tools that depend on "old" model may cause problems
+    - e.g. [docker-compose](https://github.com/docker/compose/issues/2841)
 
 ## Zones
 
@@ -228,7 +270,7 @@ Both use `iptables`/netfilter in the background!
 | Current active zone          | `firewall-cmd --get-active-zones`    |
 | Add interface to active zone | `firewall-cmd --add-interface=IFACE` |
 
-! `firewall-cmd` requires root permissions
+`firewall-cmd` requires *root permissions*
 
 ## Configuring firewall rules
 
@@ -257,6 +299,39 @@ sudo firewall-cmd --add-service=https
 sudo firewall-cmd --add-service=https --permanent
 ```
 
+# Troubleshooting
+
+## General guidelines
+
+- Follow TCP/IP (or OSI) stack
+- Bottom-up
+
+## Checklist
+
+- Link layer:
+    - test the cable(s)
+    - check switch/NIC LEDs
+    - `ip link`
+- Internet layer:
+    - Local settings:
+        - IP address: `ip a`
+        - Default gateway: `ip r`
+        - DNS service: `/etc/resolv.conf`
+    - LAN connectivity:
+        - Ping between hosts
+        - Ping default GW/DNS
+        - Query DNS
+
+---
+
+- Transport layer:
+    - Service running? `sudo systemctl status SERVICE`
+    - Correct port/interface? `sudo ss -tulpn`
+    - Firewall settings? `sudo firewall-cmd --list-all`
+- Application layer:
+    - Check the logs `sudo journalctl -f -u SERVICE`
+    - Check config file syntax
+
 # SELinux troubleshooting
 
 ## SELinux
@@ -277,7 +352,6 @@ sudo firewall-cmd --add-service=https --permanent
 
 Enable SELinux permanently: `/etc/sysconfig/selinux`
 
-## 
 
 # Thank you!
 
@@ -295,4 +369,6 @@ Enable SELinux permanently: `/etc/sysconfig/selinux`
 ## References
 
 - Hayden, M. (2015) [Understanding systemd’s predictable network device names](https://major.io/2015/08/21/understanding-systemds-predictable-network-device-names/)
+- Jahoda, M., et al. (2016a) [RHEL 7 Security Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Security_Guide/index.html)
+- Jahoda, M., et al. (2016b) [RHEL 7 SELinux User's and Administrator's Guide](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/SELinux_Users_and_Administrators_Guide/index.html)
 - Van Vreckem, B. (2015) [Enterprise Linux 7 Cheat sheet](https://github.com/bertvv/cheat-sheets/blob/master/src/EL7.md)
