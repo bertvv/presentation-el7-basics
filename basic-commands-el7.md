@@ -2,7 +2,7 @@
 % Bert Van Vreckem
 % CentOS Dojo 2017 Brussels, 2017-02-03
 
-# Agenda
+# Intro
 
 ## `whoami`
 
@@ -32,6 +32,7 @@
 ## Remarks
 
 - "Old" commands are (mostly) not mentioned
+    - <https://fedoraproject.org/wiki/SysVinit_to_Systemd_Cheatsheet>
 - I'm neutral w.r.t. systemd, etc. I won't discuss "politics" here!
 - **Interrupt me if you have remarks/questions!**
 
@@ -111,6 +112,8 @@ $ ip a
     link/ether 08:00:27:75:a8:2c brd ff:ff:ff:ff:ff:ff
 ```
 
+(`enp0s8` has no IP, caused by Vagrant [bug #8096](https://github.com/mitchellh/vagrant/issues/8096))
+
 ## The new interface names
 
 [Predictable Network Interface Names](https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/), since Systemd v197
@@ -122,6 +125,8 @@ $ ip a
 | `p1p1`     | PCI slot # Port #                      |
 | `enp0s3`   | Ethernet Network Peripheral # serial # |
 | `wlp3s0b1` | Wireless PCI bus # slot #              |
+
+Also, see (Hayden, 2015)
 
 ## Configuration
 
@@ -226,13 +231,13 @@ Much more options in the man-page!
 
 ## Options
 
-| Task                 | Command |
-| :---                 | :---    |
-| Show server sockets  | `ss -l` |
-| Show TCP sockets     | `ss -t` |
-| Show UDP sockets     | `ss -u` |
-| Show port numbers(*) | `ss -n` |
-| Show process(†)      | `ss -p` |
+| Task                 | Command                |
+| :---                 | :---                   |
+| Show server sockets  | `ss -l`, `--listening` |
+| Show TCP sockets     | `ss -t`, `--tcp`       |
+| Show UDP sockets     | `ss -u`, `--udp`       |
+| Show port numbers(*) | `ss -n`, `--numeric`   |
+| Show process(†)      | `ss -p`, `--processes` |
 
 (*) instead of service names from `/etc/services`
 
@@ -276,6 +281,7 @@ LISTEN  0      128               :::443            :::*    users:(("httpd",pid=4
 | List all zones               | `firewall-cmd --get-zones`           |
 | Current active zone          | `firewall-cmd --get-active-zones`    |
 | Add interface to active zone | `firewall-cmd --add-interface=IFACE` |
+| Show current rules           | `firewall-cmd --list-all`            |
 
 `firewall-cmd` requires *root permissions*
 
@@ -283,7 +289,6 @@ LISTEN  0      128               :::443            :::*    users:(("httpd",pid=4
 
 | Task                     | Command                            |
 | :---                     | :---                               |
-| Show current rules       | `firewall-cmd --list-all`          |
 | Allow predefined service | `firewall-cmd --add-service=http`  |
 | List predefined services | `firewall-cmd --get-services`      |
 | Allow specific port      | `firewall-cmd --add-port=8080/tcp` |
@@ -355,8 +360,11 @@ Goal: see the web page at <http://192.168.56.72/test.php>
 
 ## Checklist: Link layer
 
-- test the cable(s)
-- check switch/NIC LEDs
+- bare metal:
+    - test the cable(s)
+    - check switch/NIC LEDs
+- VM (e.g. VirtualBox):
+    - check Adapter type & settings
 - `ip link`
 
 ## Checklist: Internet layer
@@ -467,7 +475,7 @@ Instead of setting the files to the expected context, allow httpd to access file
 1. Convert to policy module (.pp)
 
     ```
-    $ sudo checkmodule -M -m -o httpd-vboxsf.mod https-vboxsf.te
+    $ sudo checkmodule -M -m -o httpd-vboxsf.mod httpd-vboxsf.te
     $ sudo semodule_package -o httpd-vboxsf.pp -m httpd-vboxsf.mod
     ```
 
