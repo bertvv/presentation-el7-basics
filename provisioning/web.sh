@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 #
-# Author: Bert Van Vreckem <bert.vanvreckem@gmail.com>
-#
 # Installs a simple LAMP stack
 
 #{{{ Bash settings

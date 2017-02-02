@@ -1,8 +1,6 @@
 #! /usr/bin/env bash
 #
-# Author: Bert Van Vreckem <bert.vanvreckem@gmail.com>
-#
-# Installs a simple LAMP stack
+# Installs and configures MariaDB
 
 #{{{ Bash settings
 # abort on nonzero exitstatus
