@@ -475,8 +475,8 @@ Instead of setting the files to the expected context, allow httpd to access file
 1. Convert to policy module (.pp)
 
     ```
-    $ sudo checkmodule -M -m -o httpd-vboxsf.mod httpd-vboxsf.te
-    $ sudo semodule_package -o httpd-vboxsf.pp -m httpd-vboxsf.mod
+    $ checkmodule -M -m -o httpd-vboxsf.mod httpd-vboxsf.te
+    $ semodule_package -o httpd-vboxsf.pp -m httpd-vboxsf.mod
     ```
 
 5. Install module
