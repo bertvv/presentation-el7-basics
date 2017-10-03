@@ -59,6 +59,7 @@ start_basic_services() {
   info "Starting essential services"
   systemctl start auditd.service
   systemctl restart network.service
+  systemctl start firewalld.service
 }
 
 setup_mariadb() {

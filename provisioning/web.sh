@@ -49,6 +49,7 @@ install_packages() {
     wordpress
 
   systemctl start auditd.service
+  systemctl start firewalld.service
 }
 
 configure_webserver() {

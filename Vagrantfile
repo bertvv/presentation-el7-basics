@@ -5,7 +5,7 @@ require 'rbconfig'
 require 'yaml'
 
 # Set your default base box here
-DEFAULT_BASE_BOX = 'bertvv/centos72'
+DEFAULT_BASE_BOX = 'bento/centos-7.4'
 
 #
 # No changes needed below this point
