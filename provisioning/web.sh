@@ -48,8 +48,17 @@ install_packages() {
     vim-enhanced \
     wordpress
 
+  info "Setting up services, security"
+
   systemctl start auditd.service
+  systemctl enable auditd.service
   systemctl start firewalld.service
+  systemctl enable firewalld.service
+
+  setenforce 1
+  sed -i "s/^SELINUX=.*$/SELINUX=enforcing/" /etc/selinux/config
+
+  ifdown enp0s8
 }
 
 configure_webserver() {
